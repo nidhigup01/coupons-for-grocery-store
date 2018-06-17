@@ -1,0 +1,28 @@
+6.	Your neighborhood grocery store would like to give targeted coupons to its customers, ones that are likely to be useful to them. Given that you can access the purchase history of each customer and catalog of store items, how would you design a system that suggests which coupons they should be given? Can you measure how well the system is performing?
+
+Answer 6:
+Based on their recent interactions with the neighborhood grocery stores, the products they've bought lately, and their demographics, we want to form groups of similar customers to handle them differently — i.e. offer exclusive discount coupons to some them. In this case, we will use the characteristics mentioned above as input into some algorithm and the algorithm will decide the number or kind of groups that should be formed. That’s a clear example of unsupervised learning problem since we do not have any a prior clue about how the output should look like.
+
+We must first figure out the product categories based on the catalog of store items. Let’s say the major categories are vegetables, fruits, milk, frozen, meat, and egg. These are just examples. There could be different categories based on the actual requirement. Consider what each category represents in terms of products one could purchase. We display (top 5) and describe the data accumulated over a period for each customer. This would give us mean, median, std.deviation etc. We need to implement the following:
+
+•	Feature Relevance:
+One interesting thought to consider is if one (or more) of the six product categories is relevant for understanding customer purchasing. Is it possible to determine whether customers purchasing some amount of one category of products will necessarily purchase some proportional amount of another category of products? 
+To achieve that we can visualize feature distribution using scatter matrix. If we find that the feature is relevant for identifying a specific customer, then the scatter matrix may not show any correlation between that feature and the others. Conversely, if we believe that feature is not relevant for identifying a specific customer, the scatter matrix might show a correlation between that feature and another feature in the data. 
+
+•	Data Preprocessing:
+
+If data is not normally distributed, especially if the mean and median vary significantly (indicating a large skew), it is most often appropriate to apply a non-linear scaling — particularly for financial data. One way to achieve this scaling is by using a Box-Cox test, which calculates the best power transformation of the data that reduces skewness. A simpler approach which can work in most cases would be applying the natural logarithm and I would prefer the same. After applying a natural logarithm scaling to the data, the distribution of each feature should appear much more normal
+	Outlier Detection:
+I we will use Tukey's Method for identifying outliers: An outlier step is calculated as 1.5 times the interquartile range (IQR). A data point with a feature that is beyond an outlier step outside of the IQR for that feature is considered abnormal. If we have datapoints that are outliers in multiple categories we must analyze why that may be and if they warrant removal. If we choose to remove any outliers, we must ensure that the sample data does not contain any of these points.
+	Feature Transformation and Dimensionality Reduction:
+We will use principal component analysis (PCA) to draw conclusions about the underlying structure of the customer data. We apply PCA to the good data (after data preprocessing and outlier removal) to discover which dimensions about the data best maximize the variance of features involved. 
+When using principal component analysis, one of the main goals is to reduce the dimensionality of the data in effect, reducing the complexity of the problem. Dimensionality reduction comes at a cost: Fewer dimensions used implies less of the total variance in the data is being explained. Because of this, the cumulative explained variance ratio is extremely important for knowing how many dimensions are necessary for the problem
+•	Clustering:
+
+I will choose either a K-Means clustering algorithm or a Gaussian Mixture Model clustering algorithm to identify the various customer segments hidden in the data. We will then recover specific data points from the clusters to understand their significance by transforming them back into their original dimension and scale.
+
+We can quantify the "goodness" of a clustering by calculating each data point's silhouette coefficient. The silhouette coefficient for a data point measures how similar it is to its assigned cluster from -1 (dissimilar) to 1 (similar). Calculating the mean silhouette coefficient provides for a simple scoring method of a given clustering.
+
+Once we've chosen the optimal number of clusters for the clustering algorithm using the scoring metric above, we can now visualize the results for the optimal number of clusters. For the problem of creating customer segments, a cluster's center point corresponds to the average customer of that segment. Since the data is currently reduced in dimension and scaled by a logarithm, we can recover the representative customer spending from these data points by applying the inverse transformations.
+
+The customers can be given coupon based on the clusters they belong.
